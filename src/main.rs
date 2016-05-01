@@ -10,13 +10,13 @@ fn main() {
     let num_node_output: usize = 5;
 
     // 教師データ
-    let inputs: Vec<f64> = FeedForward::gen_rand_weights(num_input, 0.0, 1.0); // 入力
+    let inputs: Vec<f64> = gen_rand_weights(num_input, 0.0, 1.0); // 入力
     let teacher: &Vec<f64> = &inputs; // 期待される出力
 
     // ネットワークの生成
     // 重み
-    let weights_hide: Vec<f64> = FeedForward::gen_rand_weights(num_input*num_node_hide, 0.0, 0.1);
-    let weights_output: Vec<f64> = FeedForward::gen_rand_weights(num_input*num_node_output, 0.0, 0.1);
+    let weights_hide: Vec<f64> = gen_rand_weights(num_input*num_node_hide, 0.0, 0.1);
+    let weights_output: Vec<f64> = gen_rand_weights(num_input*num_node_output, 0.0, 0.1);
 
     // 活性化関数
     let func_hide: Box<Fn(f64) -> f64> = Box::new(move |x: f64| x.max(0.0)); // 標準正規化関数
@@ -34,8 +34,6 @@ fn main() {
     });
 
     // 標準入力用の文字列
-    let mut input_string: String = String::new();
-
     'main: loop {
         println!("");
 
@@ -69,23 +67,42 @@ fn main() {
         }
         println!("\n");
 
-        println!("diff:\n {:.*}", 5, (FeedForward::calc_diff(&outputs, &teacher, &diff_func) * 1000.0).round() * 0.001);
+        println!("diff:\n {:.*}", 5, (calc_diff(&outputs, &teacher, &diff_func) * 1000.0).round() * 0.001);
         println!("");
 
         println!("Please input modification for hide layer (ex: 0 0 0.01):");
 
+        let mut input_string: String = String::new();
         io::stdin().read_line(&mut input_string).expect("Failed to read line");
+
+        if input_string.as_str() == "0" { break 'main; }
 
         let modifications: Vec<&str> = input_string.split_whitespace().collect();
         let target_row: usize = modifications[0].trim().parse().expect("Please input a number!");
         let target_column: usize = modifications[1].trim().parse().expect("Please input a number!");
         let new_weight: f64 = modifications[2].trim().parse().expect("Please input a number!");
 
-        layer_hide.update_weight(target_row, target_column, inputs.len(), new_weight);
+        layer_hide.update_weights(target_row, target_column, inputs.len(), new_weight);
     }
 }
 
 // ========================================================================= //
+
+pub fn calc_hadamard(vec1: Vec<f64>, vec2: Vec<f64>) -> f64 {
+    vec1.iter().zip(vec2.iter()).fold(0 as f64, |acc: f64, (&elem1, &elem2)| {
+        acc + elem1 * elem2
+    })
+}
+
+pub fn gen_rand_weights(num: usize, low: f64, high: f64) -> Vec<f64> {
+    let mut rng = rand::thread_rng();
+
+    rng.gen_iter::<f64>().take(num).map(|item| (high - low)*item + low).collect::<Vec<f64>>()
+}
+
+pub fn calc_diff<'a>(output: &'a Vec<f64>, teacher: &'a Vec<f64>, func: &'a Box<Fn(&Vec<f64>, &Vec<f64>) -> f64>) -> f64 {
+    func(output, teacher)
+}
 
 struct FeedForward<'a> {
     weights: Vec<f64>,
@@ -114,17 +131,7 @@ impl<'a> FeedForward<'a> {
         }).collect::<Vec<f64>>()
     }
 
-    fn calc_diff(output: &'a Vec<f64>, teacher: &'a Vec<f64>, func: &'a Box<Fn(&Vec<f64>, &Vec<f64>) -> f64>) -> f64 {
-        func(output, teacher)
-    }
-
-    fn gen_rand_weights(num: usize, low: f64, high: f64) -> Vec<f64> {
-        let mut rng = rand::thread_rng();
-
-        rng.gen_iter::<f64>().take(num).map(|item| (high - low)*item + low).collect::<Vec<f64>>()
-    }
-
-    fn print_weights(&self, length: &usize) {
+    fn print_weights(&'a self, length: &'a usize) {
         for line_weights in self.weights.chunks(*length) {
             for weight in line_weights {
                 print!(" {:.*}", 2, weight);
@@ -133,8 +140,12 @@ impl<'a> FeedForward<'a> {
         }
     }
 
-    fn update_weight(&mut self, row: usize, column: usize, num_column: usize, new_weight: f64) {
-        let x = self.weights.get_mut(row * num_column + column).expect("");
-        *x = new_weight;
+    fn update_weights(&mut self, row: usize, column: usize, num_column: usize, new_weight: f64) {
+        self.weights = self.weights.iter().enumerate().map(|(index, elem)| {
+            match row * num_column + column {
+                x if x == index => new_weight,
+                _ => *elem,
+            }
+        }).collect::<Vec<f64>>();
     }
 }
