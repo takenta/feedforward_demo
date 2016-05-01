@@ -70,12 +70,12 @@ fn main() {
         println!("diff:\n {:.*}", 5, (calc_diff(&outputs, &teacher, &diff_func) * 1000.0).round() * 0.001);
         println!("");
 
-        println!("Please input modification for hide layer (ex: 0 0 0.01):");
+        println!("Please input modification for hide layer (ex: 0 0 0.01) (EXIT: halt):");
 
         let mut input_string: String = String::new();
         io::stdin().read_line(&mut input_string).expect("Failed to read line");
 
-        if input_string.as_str() == "0" { break 'main; }
+        if input_string.trim() == "halt" { break 'main; }
 
         let modifications: Vec<&str> = input_string.split_whitespace().collect();
         let target_row: usize = modifications[0].trim().parse().expect("Please input a number!");
