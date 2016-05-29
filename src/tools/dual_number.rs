@@ -15,16 +15,19 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn select(&mut self) {
         if self.dx == 0.0 {
             self.dx = 1.0
         }
     }
 
+    #[allow(dead_code)]
     pub fn exclude(&mut self) {
         self.dx = 0.0
     }
 
+    #[allow(dead_code)]
     pub fn recip(self) -> DualNumber {
         DualNumber {
             x: self.x.recip(),
@@ -32,6 +35,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn sqrt(self) -> DualNumber {
         DualNumber {
             x: self.x.sqrt(),
@@ -39,6 +43,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn exp(self) -> DualNumber {
         DualNumber {
             x: self.x.exp(),
@@ -46,6 +51,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn ln(self) -> DualNumber {
         DualNumber {
             x: self.x.ln(),
@@ -53,6 +59,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn log(self, base: f64) -> DualNumber {
         DualNumber {
             x: self.x.log(base),
@@ -60,6 +67,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn sin(self) -> DualNumber {
         DualNumber {
             x: self.x.sin(),
@@ -67,6 +75,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn cos(self) -> DualNumber {
         DualNumber {
             x: self.x.cos(),
@@ -74,6 +83,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn max(self, other: DualNumber) -> DualNumber {
         if self.x > other.x {
             self
@@ -82,6 +92,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn min(self, other: DualNumber) -> DualNumber {
         if self.x < other.x {
             self
@@ -90,6 +101,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn abs(self) -> DualNumber {
         DualNumber {
             x: self.x.abs(),
@@ -97,6 +109,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn round(self) -> DualNumber {
         DualNumber {
             x: self.x.round(),
@@ -104,6 +117,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn powi(self, n: i32) -> DualNumber {
         if self.x == 0.0 {
             DualNumber {
@@ -123,6 +137,7 @@ impl DualNumber {
         }
     }
 
+    #[allow(dead_code)]
     pub fn powf(self, n: f64) -> DualNumber {
         if self.x == 0.0 {
             DualNumber {
